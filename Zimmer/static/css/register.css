@@ -1,0 +1,277 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  background: #f8f6f3;
+  color: #333;
+}
+
+.profile-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.profile-logo {
+  display: block;
+  margin: 0 auto 1.25rem auto;
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+}
+
+.profile-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #e85d04;
+  margin: 0 0 0.5rem 0;
+}
+
+.profile-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+.profile-view-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
+.register-form {
+  margin: 0;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 1.25rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e85d04;
+}
+
+.register-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+}
+
+.field {
+  margin-bottom: 0;
+}
+
+.field-full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.4rem;
+}
+
+.required-mark {
+  color: #c0392b;
+}
+
+.field input[type="email"],
+.field input[type="password"] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #e85d04;
+}
+
+.profile-photo-upload {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-photo-preview {
+  overflow: hidden;
+  background: #f0f0f0;
+  border: 2px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-photo-preview-document {
+  width: 220px;
+  height: 150px;
+  border-radius: 12px;
+}
+
+.profile-photo-preview.has-image {
+  border-style: solid;
+  border-color: #e85d04;
+}
+
+.profile-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-photo-placeholder {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: center;
+  padding: 0.75rem;
+}
+
+.profile-photo-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.upload-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.btn-upload-label {
+  display: inline-block;
+  padding: 0.6rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e85d04;
+  background: #fff;
+  border: 1px solid #e85d04;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-upload-label:hover {
+  background: #e85d04;
+  color: #fff;
+}
+
+.field-hint-small {
+  font-size: 0.75rem;
+  color: #888;
+  margin: 0;
+}
+
+.validation-message {
+  color: #b71c1c;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 2px solid #b71c1c;
+}
+
+.validation-message-section {
+  margin-top: 1rem;
+}
+
+.validation-message[hidden] {
+  display: none;
+}
+
+.form-actions {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.btn-submit {
+  padding: 0.9rem 2.5rem;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: #e85d04;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(232, 93, 4, 0.35);
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-submit:hover {
+  background: #d35400;
+}
+
+.btn-submit:active {
+  transform: scale(0.98);
+}
+
+.btn-register {
+  min-width: 220px;
+}
+
+@media (max-width: 520px) {
+  .profile-page {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .profile-view-card {
+    padding: 1.25rem;
+  }
+
+  .register-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .field-full {
+    grid-column: auto;
+  }
+
+  .profile-photo-preview-document {
+    width: 100%;
+    max-width: 100%;
+    height: 180px;
+  }
+
+  .btn-register {
+    width: 100%;
+  }
+}

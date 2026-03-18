@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Roommates – Zimmer</title>
+
+    <link rel="stylesheet" href="{% static 'css/swipe.css' %}">
+    <link rel="stylesheet" href="{% static 'css/roommate_card.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page-shell">
+    <div class="bg-blur"></div>
+    <div class="bg-overlay"></div>
+
+    <header class="topbar">
+        <a href="{% url 'home' %}" class="brand">
+            <img src="{% static 'img/img.png' %}" alt="Zimmer logo" class="brand__logo">
+        </a>
+
+        <nav class="topbar__nav">
+            <a href="{% url 'my_profile' %}" class="nav-btn nav-btn--light" id="navBtnMyProfile">My Profile</a>
+            <a href="{% url 'matches' %}" class="nav-btn nav-btn--light">Matches</a>
+            <a href="{% url 'logout' %}" class="nav-btn nav-btn--accent">Logout</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="swipe-section">
+            <div class="swipe-heading">
+                <h1>Find Your Roommate</h1>
+                <p>Swipe through profiles and find someone who matches your lifestyle.</p>
+            </div>
+
+            {% if waiting_verification %}
+            <div class="empty-state" id="waitingVerificationState">
+                <p>You are waiting to be verified.</p>
+                <p>Once a moderator approves your profile, you will be able to see and swipe on roommate suggestions here.</p>
+            </div>
+            {% elif has_profiles %}
+            <div id="swipeContent" class="hidden" aria-hidden="true">
+                {% include "partials/_roommate_card.html" %}
+
+                <div class="swipe-actions">
+                    <button type="button" class="action-btn action-btn--reject circle-btn" id="rejectBtn" aria-label="Reject">
+                        ✕
+                    </button>
+
+                    <button type="button" class="action-btn action-btn--like circle-btn" id="likeBtn" aria-label="Like">
+                        ✔
+                    </button>
+                </div>
+            </div>
+
+            <div class="empty-state hidden" id="emptyState">
+                <p>No more roommates to show.</p>
+            </div>
+            {% else %}
+            <div class="empty-state" id="emptyState">
+                <p>No more roommates to show.</p>
+            </div>
+            {% endif %}
+
+            <p class="match-message" id="matchMessage"></p>
+        </section>
+    </main>
+</div>
+
+{{ profiles_json|json_script:"profiles-data" }}
+<script>
+  window.SWIPE_ACTION_URL = "{% url 'swipe_action' %}";
+  window.SWIPE_SUGGESTIONS_URL = "{% url 'swipe_suggestions' %}";
+  window.CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="{% static 'js/swipe.js' %}"></script>
+</body>
+</html>

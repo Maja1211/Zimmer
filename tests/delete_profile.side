@@ -1,0 +1,181 @@
+{
+  "id": "0aa75b56-6d44-4d52-a6f9-2f6d3492c8c8",
+  "version": "2.0",
+  "name": "zimmer",
+  "url": "http://127.0.0.1:8000",
+  "tests": [{
+    "id": "b6b22731-032a-44ef-8273-5c8c390b5c49",
+    "name": "test_delete_profile",
+    "commands": [{
+      "id": "163b4482-97fa-42d1-9aca-c5198accb5fc",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "71ff2157-60bd-464b-b655-9e2a096607f1",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1470x830",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5eafa0a1-9631-401b-ac87-5cba43fa6d23",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Login",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=a:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/login/')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "56467b14-5430-4a33-85f4-16af1e603f81",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c3c4f70d-5a44-49e4-8545-3c2facd1ebb1",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "teasubasic@gmail.com"
+    }, {
+      "id": "d5d6f966-698f-4718-92ef-d81b30f40714",
+      "comment": "",
+      "command": "click",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "083d81d4-b987-4ca6-866a-9abcce9cbc00",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "test123"
+    }, {
+      "id": "10438487-f23e-4a00-9f16-5da8d256e6f9",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-submit",
+      "targets": [
+        ["css=.btn-submit", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d9fcaab7-6553-431a-bbc8-6d08e763eb69",
+      "comment": "",
+      "command": "click",
+      "target": "id=navBtnMyProfile",
+      "targets": [
+        ["id=navBtnMyProfile", "id"],
+        ["linkText=My Profile", "linkText"],
+        ["css=#navBtnMyProfile", "css:finder"],
+        ["xpath=//a[contains(text(),'My Profile')]", "xpath:link"],
+        ["xpath=//a[@id='navBtnMyProfile']", "xpath:attributes"],
+        ["xpath=//a[contains(@href, '/my-profile/')]", "xpath:href"],
+        ["xpath=//nav/a", "xpath:position"],
+        ["xpath=//a[contains(.,'My Profile')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "37168c15-7194-4eaa-a457-1e80fe64c314",
+      "comment": "",
+      "command": "click",
+      "target": "id=btnDeleteProfile",
+      "targets": [
+        ["id=btnDeleteProfile", "id"],
+        ["css=#btnDeleteProfile", "css:finder"],
+        ["xpath=//button[@id='btnDeleteProfile']", "xpath:attributes"],
+        ["xpath=//form[@id='deleteProfileForm']/button", "xpath:idRelative"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Delete profile')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "182e9c12-0b67-4045-b745-8b0066578565",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=deleteProfileModalTitle",
+      "targets": [
+        ["id=deleteProfileModalTitle", "id"],
+        ["css=#deleteProfileModalTitle", "css:finder"],
+        ["xpath=//h2[@id='deleteProfileModalTitle']", "xpath:attributes"],
+        ["xpath=//div[@id='deleteProfileModal']/div/h2", "xpath:idRelative"],
+        ["xpath=//div/h2", "xpath:position"],
+        ["xpath=//h2[contains(.,'Delete profile')]", "xpath:innerText"]
+      ],
+      "value": "Delete profile"
+    }, {
+      "id": "ee3f91b5-9b6b-43f4-b3ed-42e340dc11f9",
+      "comment": "",
+      "command": "click",
+      "target": "id=deleteProfileModalConfirm",
+      "targets": [
+        ["id=deleteProfileModalConfirm", "id"],
+        ["css=#deleteProfileModalConfirm", "css:finder"],
+        ["xpath=//button[@id='deleteProfileModalConfirm']", "xpath:attributes"],
+        ["xpath=//div[@id='deleteProfileModal']/div/div/button[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Yes, delete my profile')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "93fedd70-758b-4506-b2f9-2de796952f05",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.hero__overlay",
+      "targets": [
+        ["css=.hero__overlay", "css:finder"],
+        ["xpath=//div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "1997a4b6-c51d-425c-972c-3af015a779b6",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["b6b22731-032a-44ef-8273-5c8c390b5c49"]
+  }],
+  "urls": ["http://127.0.0.1:8000/"],
+  "plugins": []
+}

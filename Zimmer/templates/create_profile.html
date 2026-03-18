@@ -1,0 +1,359 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Profile – Zimmer</title>
+    <link rel="stylesheet" href="{% static 'css/create_profile.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+</head>
+<body>
+    <div class="profile-page">
+        <header class="profile-header">
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout">Log out</button>
+            </form>
+            <img src="{% static 'img/img.png' %}" alt="Zimmer" class="profile-logo">
+            <h1 class="profile-title">Create Profile</h1>
+            <p class="profile-subtitle">Fill in all details to find your perfect roommate</p>
+        </header>
+
+        <form class="profile-form" method="post" action="" id="profileForm" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- PART 1: Your profile -->
+            <div class="form-part" id="formPart1">
+            <!-- Basic Information -->
+            <section class="form-section">
+                <h2 class="section-title">Basic Information</h2>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="firstName">First Name <span class="required-mark">*</span></label>
+                        <input type="text" id="firstName" name="first_name" placeholder="Enter first name" value="{{ request.POST.first_name|default:'' }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Last Name <span class="required-mark">*</span></label>
+                        <input type="text" id="lastName" name="last_name" placeholder="Enter last name" value="{{ request.POST.last_name|default:'' }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="dateOfBirth">Date of Birth <span class="required-mark">*</span></label>
+                        <div class="input-with-icon input-with-datepicker">
+                            <input type="text" id="dateOfBirth" name="date_of_birth" placeholder="dd.mm.yyyy" value="{{ request.POST.date_of_birth|default:'' }}" required autocomplete="off">
+                            <span class="input-icon" aria-hidden="true">📅</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="idNumber">ID Number (JMBG) <span class="required-mark">*</span></label>
+                        <input type="text" id="idNumber" name="id_number" placeholder="13 digits" pattern="[0-9]{13}" maxlength="13" value="{{ request.POST.id_number|default:'' }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="phone">Phone Number <span class="required-mark">*</span></label>
+                        <input type="tel" id="phone" name="phone" placeholder="+38..." value="{{ request.POST.phone|default:'' }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="occupation">Occupation</label>
+                        <input type="text" id="occupation" name="occupation" placeholder="Student, employed..." value="{{ request.POST.occupation|default:'' }}">
+                    </div>
+                    <div class="field" id="budgetField">
+                        <label for="budget">Budget (EUR) <span class="required-mark">*</span></label>
+                        <input type="number" id="budget" name="budget" placeholder="200" min="0" step="1" value="{{ request.POST.budget|default:'200' }}">
+                        <p class="field-hint">Only if you are looking for accommodation.</p>
+                    </div>
+                    <div class="field field-profile-photo">
+                        <label for="profilePhoto">Profile photo <span class="required-mark">*</span></label>
+                        <div class="profile-photo-upload">
+                            <div class="profile-photo-preview" id="profilePhotoPreview" aria-hidden="true">
+                                <img id="profilePhotoImg" src="" alt="" class="profile-photo-img" hidden>
+                                <span class="profile-photo-placeholder" id="profilePhotoPlaceholder">No photo chosen</span>
+                            </div>
+                            <input type="file" id="profilePhoto" name="profile_photo" accept="image/jpeg,image/png,image/webp,image/gif" class="profile-photo-input" required>
+                            <label for="profilePhoto" class="btn-upload-label">Choose photo</label>
+                        </div>
+                        <p class="field-hint-small">JPG, PNG, WebP, GIF</p>
+                    </div>
+                </div>
+                <div id="validationMessageBasic" class="validation-message validation-message-section" role="alert" {% if not error %}hidden{% endif %}>{% if error %}{{ error }}{% endif %}</div>
+            </section>
+
+            <!-- About me -->
+            <section class="form-section">
+                <h2 class="section-title">About me</h2>
+
+                <div class="field radio-group">
+                    <span class="label">Do you have accommodation? <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="has_accommodation" value="yes" id="hasAccommodationYes" {% if request.POST.has_accommodation == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="has_accommodation" value="no" id="hasAccommodationNo" {% if request.POST.has_accommodation != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+
+                <!-- Conditional: accommodation details (address, map, house/apartment) -->
+                <div class="conditional-block" id="accommodationDetails" hidden>
+                    <div class="field">
+                        <label for="accommodationAddress">Your accommodation address <span class="required-mark">*</span></label>
+                        <input type="text" id="accommodationAddress" name="accommodation_address" placeholder="Enter full address" value="{{ request.POST.accommodation_address|default:'' }}">
+                    </div>
+                    <div class="field">
+                        <label>Accommodation type <span class="required-mark">*</span></label>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="accommodation_type" value="house" {% if request.POST.accommodation_type == 'house' %}checked{% endif %}> House</label>
+                            <label class="radio-label"><input type="radio" name="accommodation_type" value="apartment" {% if request.POST.accommodation_type == 'apartment' %}checked{% endif %}> Apartment</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="accommodationRent">Monthly rent for roommate (EUR) <span class="required-mark">*</span></label>
+                        <input type="number" id="accommodationRent" name="accommodation_rent" placeholder="200" min="1" step="1" value="{{ request.POST.accommodation_rent|default:'' }}">
+                    </div>
+                    <div class="field map-container">
+                        <label>Your accommodation on map <span class="required-mark">*</span></label>
+                        <input type="hidden" name="accommodation_lat" id="accommodationLat" value="">
+                        <input type="hidden" name="accommodation_lon" id="accommodationLon" value="">
+                        <div id="accommodationMap" class="map-box"></div>
+                        <p class="map-hint">Enter your address above and click "Show on map" to mark the location.</p>
+                        <button type="button" class="btn-map" id="showAccommodationOnMap">Show on map</button>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Gender <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="gender" value="male" {% if request.POST.gender == 'male' %}checked{% endif %}> Male</label>
+                        <label class="radio-label"><input type="radio" name="gender" value="female" {% if request.POST.gender == 'female' %}checked{% endif %}> Female</label>
+                        <label class="radio-label"><input type="radio" name="gender" value="other" {% if request.POST.gender == 'other' %}checked{% endif %}> Other</label>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Do you have a pet? <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="has_pet" value="yes" id="hasPetYes" {% if request.POST.has_pet == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="has_pet" value="no" id="hasPetNo" {% if request.POST.has_pet != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="hasPetDetails" hidden>
+                    <div class="field">
+                        <label for="petType">What pet do you have? <span class="required-mark">*</span></label>
+                        <input type="text" id="petType" name="pet_type" placeholder="e.g. dog, cat" value="{{ request.POST.pet_type|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Are you a smoker? <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="smoker" value="yes" {% if request.POST.smoker == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="smoker" value="no" {% if request.POST.smoker != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Do you have parties? <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="has_parties" value="yes" id="hasPartiesYes" {% if request.POST.has_parties == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="has_parties" value="no" id="hasPartiesNo" {% if request.POST.has_parties != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="partyFrequencyBlock" hidden>
+                    <div class="field">
+                        <label for="partyFrequency">How often do you have parties? <span class="required-mark">*</span></label>
+                        <select id="partyFrequency" name="party_frequency">
+                            <option value="">Select...</option>
+                            <option value="rarely" {% if request.POST.party_frequency == 'rarely' %}selected{% endif %}>Rarely</option>
+                            <option value="often" {% if request.POST.party_frequency == 'often' %}selected{% endif %}>Often</option>
+                            <option value="very_often" {% if request.POST.party_frequency == 'very_often' %}selected{% endif %}>Very often</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Do you have a partner? <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="has_partner" value="yes" {% if request.POST.has_partner == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="has_partner" value="no" {% if request.POST.has_partner != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Do you play an instrument? <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="plays_instrument" value="yes" id="playsInstrumentYes" {% if request.POST.plays_instrument == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="plays_instrument" value="no" id="playsInstrumentNo" {% if request.POST.plays_instrument != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="instrumentDetails" hidden>
+                    <div class="field">
+                        <label for="instrumentName">Which instrument do you play? <span class="required-mark">*</span></label>
+                        <input type="text" id="instrumentName" name="instrument_name" placeholder="e.g. guitar, piano" value="{{ request.POST.instrument_name|default:'' }}">
+                    </div>
+                </div>
+                <div id="validationMessageAbout" class="validation-message validation-message-section" role="alert" hidden></div>
+            </section>
+
+            <!-- Accommodation Preferences (hidden when user has accommodation) -->
+            <section class="form-section" id="accommodationPreferencesSection" {% if request.POST.has_accommodation == 'yes' %}hidden{% endif %}>
+                <h2 class="section-title">Accommodation Preferences</h2>
+                <div class="field radio-group">
+                    <span class="label">Preferred accommodation type <span class="required-mark">*</span></span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="preferred_type" value="house" {% if request.POST.preferred_type == 'house' %}checked{% endif %}> House</label>
+                        <label class="radio-label"><input type="radio" name="preferred_type" value="apartment" {% if request.POST.preferred_type == 'apartment' %}checked{% endif %}> Apartment</label>
+                        <label class="radio-label"><input type="radio" name="preferred_type" value="anyways" {% if request.POST.preferred_type == 'anyways' %}checked{% endif %}> Anyway</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="city">City <span class="required-mark">*</span></label>
+                    <input type="hidden" name="city_lat" id="cityLat" value="{{ request.POST.city_lat|default:'' }}">
+                    <input type="hidden" name="city_lon" id="cityLon" value="{{ request.POST.city_lon|default:'' }}">
+                    <input type="text" id="city" name="city" placeholder="Enter city" value="{{ request.POST.city|default:'' }}" required>
+                    <p class="field-hint">If you have specific location click on the map below to pin a spot.</p>
+                </div>
+                <div class="field">
+                    <label for="preferredLocation">Preferred location</label>
+                    <input type="text" id="preferredLocation" name="preferred_location" placeholder="Click to select location on map..." value="{{ request.POST.preferred_location|default:'' }}">
+                </div>
+                <div class="field">
+                    <label for="locationRadius">Radius (km)</label>
+                    <input type="number" id="locationRadius" name="location_radius" placeholder="e.g. 5" min="1" max="20" step="1" title="Search radius in kilometres (max 20 km)" value="{{ request.POST.location_radius|default:'' }}">
+                </div>
+                <div class="field map-container">
+                    <label>Select your preferred location on map</label>
+                    <div id="preferredLocationMap" class="map-box">Interactive map – click to select your preferred location.</div>
+                </div>
+                <div id="validationMessageAccommodation" class="validation-message validation-message-section" role="alert" hidden></div>
+            </section>
+
+            <div class="form-actions form-actions-next">
+                <button type="button" class="btn-next" id="btnNext">Next</button>
+            </div>
+            </div><!-- end formPart1 -->
+
+            <!-- PART 2: Roommate preferences -->
+            <div class="form-part form-part-hidden" id="formPart2">
+            <section class="form-section">
+                <h2 class="section-title">Roommate Preferences</h2>
+                <p class="section-desc">Set your preferences for your ideal roommate.</p>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="minAge">Minimum roommate age</label>
+                        <input type="number" id="minAge" name="min_roommate_age" min="18" max="120" value="{{ request.POST.min_roommate_age|default:'18' }}">
+                    </div>
+                    <div class="field">
+                        <label for="maxAge">Maximum roommate age</label>
+                        <input type="number" id="maxAge" name="max_roommate_age" min="18" max="120" value="{{ request.POST.max_roommate_age|default:'65' }}">
+                    </div>
+                </div>
+
+                <div class="field radio-group" id="roommateHasAccommodationBlock">
+                    <span class="label">Should the roommate have accommodation?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_has_accommodation" value="yes" id="roommateAccommodationYes" {% if request.POST.roommate_has_accommodation == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="roommate_has_accommodation" value="no" id="roommateAccommodationNo" {% if request.POST.roommate_has_accommodation == 'no' %}checked{% endif %}> No</label>
+                        <label class="radio-label"><input type="radio" name="roommate_has_accommodation" value="doesnt_matter" id="roommateAccommodationDoesntMatter" {% if request.POST.roommate_has_accommodation != 'yes' and request.POST.roommate_has_accommodation != 'no' %}checked{% endif %}> Doesn't matter</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="roommateAccommodationTypeBlock" hidden>
+                    <div class="field radio-group">
+                        <span class="label">If yes, what type do you prefer?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_accommodation_type" value="house" {% if request.POST.roommate_accommodation_type == 'house' %}checked{% endif %}> House</label>
+                            <label class="radio-label"><input type="radio" name="roommate_accommodation_type" value="apartment" {% if request.POST.roommate_accommodation_type == 'apartment' %}checked{% endif %}> Apartment</label>
+                            <label class="radio-label"><input type="radio" name="roommate_accommodation_type" value="doesnt_matter" {% if request.POST.roommate_accommodation_type == 'doesnt_matter' or not request.POST.roommate_accommodation_type %}checked{% endif %}> Doesn't matter</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">What gender should the roommate be?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_gender" value="male" {% if request.POST.roommate_gender == 'male' %}checked{% endif %}> Male</label>
+                        <label class="radio-label"><input type="radio" name="roommate_gender" value="female" {% if request.POST.roommate_gender == 'female' %}checked{% endif %}> Female</label>
+                        <label class="radio-label"><input type="radio" name="roommate_gender" value="doesnt_matter" {% if request.POST.roommate_gender != 'male' and request.POST.roommate_gender != 'female' %}checked{% endif %}> Doesn't matter</label>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Is it acceptable that the roommate has a pet?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_pet_ok" value="yes" id="roommatePetOkYes" {% if request.POST.roommate_pet_ok == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="roommate_pet_ok" value="no" id="roommatePetOkNo" {% if request.POST.roommate_pet_ok != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="roommatePetsNotWantedBlock" hidden>
+                    <div class="field">
+                        <label for="petsNotWanted">Pets you do not want (separate with commas)</label>
+                        <input type="text" id="petsNotWanted" name="pets_not_wanted" placeholder="e.g. dog, cat, bird" value="{{ request.POST.pets_not_wanted|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Is it acceptable that the roommate smokes?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_smoker_ok" value="yes" {% if request.POST.roommate_smoker_ok == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="roommate_smoker_ok" value="no" {% if request.POST.roommate_smoker_ok != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Is it acceptable that the roommate has parties?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_parties_ok" value="yes" id="roommatePartiesOkYes" {% if request.POST.roommate_parties_ok == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="roommate_parties_ok" value="no" id="roommatePartiesOkNo" {% if request.POST.roommate_parties_ok != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="roommatePartyFrequencyBlock" hidden>
+                    <div class="field">
+                        <label for="roommatePartyFrequency">How often is acceptable?</label>
+                        <select id="roommatePartyFrequency" name="roommate_party_frequency">
+                            <option value="">Select...</option>
+                            <option value="rarely" {% if request.POST.roommate_party_frequency == 'rarely' %}selected{% endif %}>Rarely</option>
+                            <option value="often" {% if request.POST.roommate_party_frequency == 'often' %}selected{% endif %}>Often</option>
+                            <option value="very_often" {% if request.POST.roommate_party_frequency == 'very_often' %}selected{% endif %}>Very often</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Do you want the roommate to have a partner?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_partner_ok" value="yes" {% if request.POST.roommate_partner_ok == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="roommate_partner_ok" value="no" {% if request.POST.roommate_partner_ok == 'no' %}checked{% endif %}> No</label>
+                        <label class="radio-label"><input type="radio" name="roommate_partner_ok" value="doesnt_matter" {% if request.POST.roommate_partner_ok != 'yes' and request.POST.roommate_partner_ok != 'no' %}checked{% endif %}> Doesn't matter</label>
+                    </div>
+                </div>
+
+                <div class="field radio-group">
+                    <span class="label">Is it acceptable that the roommate plays an instrument?</span>
+                    <div class="radio-options">
+                        <label class="radio-label"><input type="radio" name="roommate_instrument_ok" value="yes" id="roommateInstrumentOkYes" {% if request.POST.roommate_instrument_ok == 'yes' %}checked{% endif %}> Yes</label>
+                        <label class="radio-label"><input type="radio" name="roommate_instrument_ok" value="no" id="roommateInstrumentOkNo" {% if request.POST.roommate_instrument_ok != 'yes' %}checked{% endif %}> No</label>
+                    </div>
+                </div>
+                <div class="conditional-block" id="roommateInstrumentsBotherBlock" hidden>
+                    <div class="field">
+                        <label for="instrumentsBother">Which instruments bother you? (separate with commas)</label>
+                        <input type="text" id="instrumentsBother" name="instruments_bother" placeholder="e.g. drums, guitar" value="{{ request.POST.instruments_bother|default:'' }}">
+                    </div>
+                </div>
+                <div id="validationMessageRoommate" class="validation-message validation-message-section" role="alert" hidden></div>
+            </section>
+
+            <div class="form-actions form-actions-submit">
+                <button type="button" class="btn-back" id="btnBack">Back</button>
+                <button type="submit" class="btn-submit">Create Profile</button>
+            </div>
+            </div><!-- end formPart2 -->
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="{% static 'js/create_profile.js' %}"></script>
+</body>
+</html>

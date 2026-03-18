@@ -1,0 +1,52 @@
+<article class="roommate-card" id="roommateCard">
+    <div class="card-left">
+        <div class="card-carousel" id="cardCarousel">
+            <div class="card-carousel-track" id="carouselTrack">
+                <div class="card-carousel-slide card-carousel-slide--photo" data-slide="0">
+                    <div class="card-image-wrap">
+                        <img id="profileImage" src="" alt="" class="card-image">
+                    </div>
+                </div>
+
+                <div class="card-carousel-slide card-carousel-slide--map" data-slide="1" hidden>
+                    <div class="card-map-wrap" id="cardMapWrap">
+                        <div id="cardAccommodationMap" class="card-map-box"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-carousel-arrows" id="carouselArrows" hidden>
+                <button type="button" class="carousel-arrow carousel-arrow--prev" id="carouselPrev" aria-label="Previous">‹</button>
+                <button type="button" class="carousel-arrow carousel-arrow--next" id="carouselNext" aria-label="Next">›</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-right">
+        <header class="card-identity">
+            <h2 id="profileName" class="card-name"></h2>
+            <p id="profileSubtitle" class="card-subtitle"></p>
+        </header>
+
+        <div class="card-housing" id="cardHousing">
+            <p class="card-housing-status" id="housingStatus"></p>
+            <p class="card-housing-money" id="housingMoney"></p>
+            <p class="card-location-line" id="locationLine"></p>
+        </div>
+
+        <section class="card-section card-section--lifestyle" id="sectionLifestyle" hidden>
+            <h3 class="card-section-title">Lifestyle</h3>
+            <ul class="card-list" id="lifestyleList"></ul>
+        </section>
+
+        <section class="card-section card-section--pets" id="sectionPets">
+            <h3 class="card-section-title">Pets</h3>
+            <div class="card-pets-content" id="petsContent"></div>
+        </section>
+
+        <section class="card-section card-section--instruments" id="sectionInstruments">
+            <h3 class="card-section-title">Instruments</h3>
+            <div class="card-instruments-content" id="instrumentsContent"></div>
+        </section>
+    </div>
+</article>

@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – Zimmer</title>
+
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="profile-page">
+
+    <header class="profile-header">
+        <img src="{% static 'img/img.png' %}" alt="Zimmer" class="profile-logo">
+
+        <h1 class="profile-title">Create Account</h1>
+        <p class="profile-subtitle">Register to start finding your perfect roommate</p>
+    </header>
+
+    <div class="profile-view-card">
+        <form method="post" enctype="multipart/form-data" class="register-form">
+            {% csrf_token %}
+
+            <section class="form-section">
+                <h2 class="section-title">Account Information</h2>
+
+                <div class="register-fields">
+                    <div class="field">
+                        <label for="email">Email <span class="required-mark">*</span></label>
+                        <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                value="{{ request.POST.email|default:'' }}"
+                                required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Password <span class="required-mark">*</span></label>
+                        <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter password"
+                                required
+                        >
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="passwordConfirm">Confirm Password <span class="required-mark">*</span></label>
+                        <input
+                                type="password"
+                                id="passwordConfirm"
+                                name="password_confirm"
+                                placeholder="Repeat password"
+                                required
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="section-title">Identity Verification</h2>
+
+                <div class="field">
+                    <label for="idPhoto">
+                        Upload photo of your ID document
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="profile-photo-upload">
+                        <div class="profile-photo-preview profile-photo-preview-document" id="idPhotoPreview">
+                            <img id="idPhotoImg" class="profile-photo-img" hidden alt="ID preview">
+                            <span class="profile-photo-placeholder" id="idPhotoPlaceholder">
+                                No photo chosen
+                            </span>
+                        </div>
+
+                        <div class="upload-controls">
+                            <input
+                                    type="file"
+                                    id="idPhoto"
+                                    name="id_photo"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    class="profile-photo-input"
+                                    required
+                            >
+
+                            <label for="idPhoto" class="btn-upload-label">
+                                Choose photo
+                            </label>
+
+                            <p class="field-hint-small">
+                                Upload a clear photo of your personal document for verification.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="validationMessageRegister"
+                     class="validation-message validation-message-section"
+                     role="alert"
+                     {% if not error %}hidden{% endif %}>
+                    {% if error %}{{ error }}{% endif %}
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit btn-register">
+                    Create Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById("idPhoto");
+    const preview = document.getElementById("idPhotoPreview");
+    const img = document.getElementById("idPhotoImg");
+    const placeholder = document.getElementById("idPhotoPlaceholder");
+
+    input.addEventListener("change", function() {
+        if (!this.files.length) return;
+
+        const file = this.files[0];
+        const url = URL.createObjectURL(file);
+
+        img.src = url;
+        img.hidden = false;
+        placeholder.hidden = true;
+        preview.classList.add("has-image");
+    });
+</script>
+
+</body>
+</html>

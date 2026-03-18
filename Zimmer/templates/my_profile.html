@@ -1,0 +1,618 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zimmer - My Profile</title>
+    <link rel="stylesheet" href="{% static 'css/create_profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/my_profile.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <style>
+        a.btn-back-view:hover { background: #e85d04 !important; color: #fff !important; }
+    </style>
+</head>
+<body>
+    <div class="profile-page my-profile-page">
+        <header class="profile-header">
+            <img src="{% static 'img/img.png' %}" alt="Zimmer" class="profile-logo">
+            <h1 class="profile-title" id="profilePageTitle">My Profile</h1>
+            <p class="profile-subtitle" id="profilePageSubtitle">Your profile at a glance</p>
+        </header>
+
+        <!-- VIEW MODE: read-only display (user from hardcoded account for testing); null/empty shown as — -->
+        {% load display_filters %}
+        <div class="profile-view-card" id="profileViewBlock" {% if show_edit_form %}style="display:none"{% endif %}>
+            <div class="profile-view-header profile-view-header--with-back">
+                <a href="{% url 'swipe' %}" class="btn-back-view" id="btnBackView" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.6rem 1.25rem;font-size:0.95rem;font-weight:600;color:#e85d04;background:#fff;border:1px solid #e85d04;border-radius:8px;text-decoration:none;">← Back</a>
+                <span class="profile-view-spacer"></span>
+                <button type="button" class="btn-edit-profile" id="btnShowEditProfile" aria-label="Edit profile">
+                    <span class="btn-edit-text">Edit profile</span>
+                    <svg class="icon-pencil" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+            </div>
+
+            <div class="profile-photo-display">
+                {% if profile and profile.profile_photo_url %}
+                <img id="profilePhotoDisplay" class="profile-photo-display-img" src="{{ profile.profile_photo_url }}" alt="Profile photo">
+                {% else %}
+                <div class="profile-photo-placeholder-box" id="profilePhotoPlaceholderBox">
+                    <span class="profile-photo-placeholder-text">No photo</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Basic Information -->
+            <section class="form-section">
+                <h2 class="section-title">Basic Information</h2>
+                <div class="profile-fields">
+                    <div class="field-display">
+                        <span class="label">First Name</span>
+                        <p class="profile-value"><strong>{{ profile.first_name|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Last Name</span>
+                        <p class="profile-value"><strong>{{ profile.last_name|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Date of Birth</span>
+                        <p class="profile-value"><strong>{{ profile.date_of_birth|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">ID Number (JMBG)</span>
+                        <p class="profile-value"><strong>{{ profile.id_number|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Phone Number</span>
+                        <p class="profile-value"><strong>{{ profile.phone|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Occupation</span>
+                        <p class="profile-value"><strong>{{ profile.occupation|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Budget (EUR)</span>
+                        <p class="profile-value"><strong>{{ profile.budget|format_display }}</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About me -->
+            <section class="form-section">
+                <h2 class="section-title">About me</h2>
+                <div class="profile-fields">
+                    <div class="field-display">
+                        <span class="label">Do you have accommodation?</span>
+                        <p class="profile-value"><strong>{{ profile.has_accommodation|format_display }}</strong></p>
+                    </div>
+                    {% if profile and profile.has_accommodation %}
+                    <div class="field-display">
+                        <span class="label">Your accommodation address</span>
+                        <p class="profile-value"><strong>{{ profile.accommodation_address|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Accommodation type</span>
+                        <p class="profile-value"><strong>{{ profile.accommodation_type|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Monthly rent for roommate (EUR)</span>
+                        <p class="profile-value"><strong>{{ profile.housing_rent|format_display }}</strong></p>
+                    </div>
+                    {% endif %}
+                    <div class="field-display">
+                        <span class="label">Gender</span>
+                        <p class="profile-value"><strong>{{ profile.gender|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Do you have a pet?</span>
+                        <p class="profile-value"><strong>{{ profile.has_pet|format_display }}</strong></p>
+                    </div>
+                    {% if profile and profile.has_pet %}
+                    <div class="field-display">
+                        <span class="label">What pet do you have?</span>
+                        <p class="profile-value"><strong>{{ profile.pet_type|format_display }}</strong></p>
+                    </div>
+                    {% endif %}
+                    <div class="field-display">
+                        <span class="label">Are you a smoker?</span>
+                        <p class="profile-value"><strong>{{ profile.smoker|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Do you have parties?</span>
+                        <p class="profile-value"><strong>{{ profile.has_parties|format_display }}</strong></p>
+                    </div>
+                    {% if profile and profile.has_parties %}
+                    <div class="field-display">
+                        <span class="label">How often do you have parties?</span>
+                        <p class="profile-value"><strong>{{ profile.party_frequency|format_display }}</strong></p>
+                    </div>
+                    {% endif %}
+                    <div class="field-display">
+                        <span class="label">Do you have a partner?</span>
+                        <p class="profile-value"><strong>{{ profile.has_partner|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Do you play an instrument?</span>
+                        <p class="profile-value"><strong>{{ profile.plays_instrument|format_display }}</strong></p>
+                    </div>
+                    {% if profile and profile.plays_instrument %}
+                    <div class="field-display">
+                        <span class="label">Which instrument do you play?</span>
+                        <p class="profile-value"><strong>{{ profile.instrument_name|format_display }}</strong></p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Accommodation Preferences -->
+            <section class="form-section">
+                <h2 class="section-title">Accommodation Preferences</h2>
+                <div class="profile-fields">
+                    <div class="field-display">
+                        <span class="label">Preferred accommodation type</span>
+                        <p class="profile-value"><strong>{{ profile.preferred_type|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Minimum roommate age</span>
+                        <p class="profile-value"><strong>{{ profile.min_roommate_age|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Maximum roommate age</span>
+                        <p class="profile-value"><strong>{{ profile.max_roommate_age|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">City</span>
+                        <p class="profile-value"><strong>{{ profile.city|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Preferred location</span>
+                        {% if profile.preferred_location %}
+                        <div id="preferredLocationDisplayMap" class="map-box map-box-display" data-preferred-location="{{ profile.preferred_location }}" aria-label="Preferred location map"></div>
+                        {% else %}
+                        <p class="profile-value"><strong>—</strong></p>
+                        {% endif %}
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Radius (km)</span>
+                        <p class="profile-value"><strong>{{ profile.location_radius|format_display }}</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Roommate Preferences -->
+            <section class="form-section">
+                <h2 class="section-title">Roommate Preferences</h2>
+                <div class="profile-fields">
+                    {% if profile.has_accommodation|lower != 'yes' %}
+                    <div class="field-display">
+                        <span class="label">Should the roommate have accommodation?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_has_accommodation|format_display }}</strong></p>
+                    </div>
+                    {% endif %}
+                    <div class="field-display">
+                        <span class="label">What gender should the roommate be?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_gender|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Is it acceptable that the roommate has a pet?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_pet_ok|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Is it acceptable that the roommate smokes?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_smoker_ok|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Is it acceptable that the roommate has parties?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_parties_ok|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Do you want the roommate to have a partner?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_partner_ok|format_display }}</strong></p>
+                    </div>
+                    <div class="field-display">
+                        <span class="label">Is it acceptable that the roommate plays an instrument?</span>
+                        <p class="profile-value"><strong>{{ profile.roommate_instrument_ok|format_display }}</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            {% if can_delete %}
+            <div class="profile-actions-bottom">
+                <form method="post" action="{% url 'delete_profile' %}" id="deleteProfileForm" class="form-delete-profile">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete-profile" id="btnDeleteProfile">Delete profile</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- EDIT MODE: form like create profile, required fields disabled -->
+        <div class="profile-view-card profile-edit-wrap" id="profileEditBlock" {% if not show_edit_form %}hidden{% endif %}>
+            <div class="profile-view-header">
+                <span class="profile-view-spacer"></span>
+                <button type="button" class="btn-cancel-edit" id="btnCancelEdit">Cancel</button>
+            </div>
+            <div id="profileEditFormMessage" class="validation-message validation-message-section" role="alert" hidden aria-live="polite"></div>
+
+            <form class="profile-form profile-form-in-card" method="post" action="{% url 'my_profile' %}" id="profileEditForm" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-part" id="formPart1">
+                <section class="form-section">
+                    <h2 class="section-title">Basic Information</h2>
+                    <input type="hidden" name="first_name" value="{{ profile.first_name|default:'' }}">
+                    <input type="hidden" name="last_name" value="{{ profile.last_name|default:'' }}">
+                    <input type="hidden" name="date_of_birth" value="{{ profile.date_of_birth|default:'' }}">
+                    <input type="hidden" name="id_number" value="{{ profile.id_number|default:'' }}">
+                    <input type="hidden" name="phone" value="{{ profile.phone|default:'' }}">
+                    <div class="readonly-fields-group">
+                        <div class="form-grid form-grid-readonly">
+                            <div class="field field-readonly">
+                                <label for="firstName">First Name <span class="required-mark">*</span></label>
+                                <input type="text" id="firstName" value="{{ profile.first_name|default:'' }}" disabled readonly tabindex="-1">
+                            </div>
+                            <div class="field field-readonly">
+                                <label for="lastName">Last Name <span class="required-mark">*</span></label>
+                                <input type="text" id="lastName" value="{{ profile.last_name|default:'' }}" disabled readonly tabindex="-1">
+                            </div>
+                            <div class="field field-readonly">
+                                <label for="dateOfBirth">Date of Birth <span class="required-mark">*</span></label>
+                                <div class="input-with-icon input-with-datepicker">
+                                    <input type="text" id="dateOfBirth" value="{{ profile.date_of_birth|default:'' }}" disabled readonly tabindex="-1" autocomplete="off">
+                                    <span class="input-icon" aria-hidden="true">📅</span>
+                                </div>
+                            </div>
+                            <div class="field field-readonly">
+                                <label for="idNumber">JMBG <span class="required-mark">*</span></label>
+                                <input type="text" id="idNumber" class="input-jmbg" value="{{ profile.id_number|default:'' }}" disabled readonly tabindex="-1" maxlength="13">
+                            </div>
+                            <div class="field field-readonly field-readonly-full">
+                                <label for="phone">Phone Number <span class="required-mark">*</span></label>
+                                <input type="tel" id="phone" value="{{ profile.phone|default:'' }}" disabled readonly tabindex="-1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-grid form-grid-basic-edit">
+                        <div class="occupation-budget-group">
+                            <div class="field">
+                                <label for="occupation">Occupation</label>
+                                <input type="text" id="occupation" name="occupation" placeholder="Student, employed..." value="{{ profile.occupation|default:'' }}">
+                            </div>
+                            <div class="field">
+                                <label for="budget">Budget (EUR)</label>
+                                <input type="number" id="budget" name="budget" placeholder="200" min="0" step="1" value="{{ profile.budget|default:'200' }}">
+                            </div>
+                        </div>
+                        <div class="field field-profile-photo">
+                            <label for="profilePhoto">Profile photo</label>
+                            <div class="profile-photo-upload">
+                                <div class="profile-photo-preview {% if profile and profile.profile_photo_url %}has-image{% endif %}" id="profilePhotoPreview" aria-hidden="true" data-initial-src="{{ profile.profile_photo_url|default:'' }}">
+                                    {% if profile and profile.profile_photo_url %}
+                                    <img id="profilePhotoImg" src="{{ profile.profile_photo_url }}" alt="" class="profile-photo-img">
+                                    <span class="profile-photo-placeholder" id="profilePhotoPlaceholder" hidden>No photo chosen</span>
+                                    {% else %}
+                                    <img id="profilePhotoImg" src="" alt="" class="profile-photo-img" hidden>
+                                    <span class="profile-photo-placeholder" id="profilePhotoPlaceholder">No photo chosen</span>
+                                    {% endif %}
+                                </div>
+                                <input type="file" id="profilePhoto" name="profile_photo" accept="image/jpeg,image/png,image/webp,image/gif" class="profile-photo-input">
+                                <label for="profilePhoto" class="btn-upload-label">Choose photo</label>
+                            </div>
+                            <p class="field-hint-small">JPG, PNG, WebP, GIF. Choose a new image to change; you will need to be verified again.</p>
+                        </div>
+                    </div>
+                    <div id="validationMessageBasic" class="validation-message validation-message-section" role="alert" {% if not error or error_section != 'validationMessageBasic' %}hidden{% endif %}>{% if error_section == 'validationMessageBasic' %}{{ error }}{% endif %}</div>
+                </section>
+
+                <section class="form-section">
+                    <h2 class="section-title">About me</h2>
+                    <div class="field radio-group">
+                        <span class="label">Do you have accommodation?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="has_accommodation" value="yes" id="hasAccommodationYes" {% if profile.has_accommodation|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="has_accommodation" value="no" id="hasAccommodationNo" {% if profile.has_accommodation|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="accommodationDetails" {% if profile.has_accommodation|lower != 'yes' %}hidden{% endif %}>
+                        <div class="field">
+                            <label for="accommodationAddress">Your accommodation address</label>
+                            <input type="text" id="accommodationAddress" name="accommodation_address" placeholder="Enter full address" value="{{ profile.accommodation_address|default:'' }}">
+                        </div>
+                        <div class="field">
+                            <label>Accommodation type</label>
+                            <div class="radio-options">
+                                <label class="radio-label"><input type="radio" name="accommodation_type" value="house" {% if profile.accommodation_type|lower == 'house' %}checked{% endif %}> House</label>
+                                <label class="radio-label"><input type="radio" name="accommodation_type" value="apartment" {% if profile.accommodation_type|lower == 'apartment' %}checked{% endif %}> Apartment</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="accommodationRent">Monthly rent for roommate (EUR) <span class="required-mark">*</span></label>
+                            <input type="number" id="accommodationRent" name="accommodation_rent" placeholder="200" min="1" step="1" value="{{ profile.housing_rent|default:'' }}">
+                        </div>
+                        <div class="field map-container">
+                            <label>Your accommodation on map <span class="required-mark">*</span></label>
+                            <input type="hidden" name="accommodation_lat" id="accommodationLat" value="{{ profile.accommodation_lat|default:'' }}">
+                            <input type="hidden" name="accommodation_lon" id="accommodationLon" value="{{ profile.accommodation_lon|default:'' }}">
+                            <div id="accommodationMap" class="map-box"></div>
+                            <p class="map-hint">Click on the map to set your accommodation location.</p>
+                            <p class="map-hint">Enter your address above and click "Show on map" to mark the location.</p>
+                            <button type="button" class="btn-map" id="showAccommodationOnMap">Show on map</button>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Gender</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="gender" value="male" {% if profile.gender|lower == 'male' %}checked{% endif %}> Male</label>
+                            <label class="radio-label"><input type="radio" name="gender" value="female" {% if profile.gender|lower == 'female' %}checked{% endif %}> Female</label>
+                            <label class="radio-label"><input type="radio" name="gender" value="other" {% if profile.gender|lower == 'other' %}checked{% endif %}> Other</label>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Do you have a pet?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="has_pet" value="yes" id="hasPetYes" {% if profile.has_pet|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="has_pet" value="no" id="hasPetNo" {% if profile.has_pet|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="hasPetDetails" {% if profile.has_pet|lower != 'yes' %}hidden{% endif %}>
+                        <div class="field">
+                            <label for="petType">What pet do you have?</label>
+                            <input type="text" id="petType" name="pet_type" placeholder="e.g. dog, cat" value="{{ profile.pet_type|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Are you a smoker?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="smoker" value="yes" {% if profile.smoker|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="smoker" value="no" {% if profile.smoker|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Do you have parties?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="has_parties" value="yes" id="hasPartiesYes" {% if profile.has_parties|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="has_parties" value="no" id="hasPartiesNo" {% if profile.has_parties|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="partyFrequencyBlock" {% if profile.has_parties|lower != 'yes' %}hidden{% endif %}>
+                        <div class="field">
+                            <label for="partyFrequency">How often do you have parties?</label>
+                            <select id="partyFrequency" name="party_frequency">
+                                <option value="">Select...</option>
+                                <option value="rarely" {% if profile.party_frequency|lower == 'rarely' %}selected{% endif %}>Rarely</option>
+                                <option value="often" {% if profile.party_frequency|lower == 'often' %}selected{% endif %}>Often</option>
+                                <option value="very_often" {% if profile.party_frequency|lower == 'very_often' %}selected{% endif %}>Very often</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Do you have a partner?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="has_partner" value="yes" {% if profile.has_partner|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="has_partner" value="no" {% if profile.has_partner|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Do you play an instrument?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="plays_instrument" value="yes" id="playsInstrumentYes" {% if profile.plays_instrument|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="plays_instrument" value="no" id="playsInstrumentNo" {% if profile.plays_instrument|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="instrumentDetails" {% if profile.plays_instrument|lower != 'yes' %}hidden{% endif %}>
+                        <div class="field">
+                            <label for="instrumentName">Which instrument do you play?</label>
+                            <input type="text" id="instrumentName" name="instrument_name" placeholder="e.g. guitar, piano" value="{{ profile.instrument_name|default:'' }}">
+                        </div>
+                    </div>
+                    <div id="validationMessageAbout" class="validation-message validation-message-section" role="alert" {% if not error or error_section != 'validationMessageAbout' %}hidden{% endif %}>{% if error_section == 'validationMessageAbout' %}{{ error }}{% endif %}</div>
+                </section>
+
+                <section class="form-section accommodation-no-block" id="sectionAccommodationPreferences" {% if profile.has_accommodation|lower == 'yes' %}hidden{% endif %}>
+                    <h2 class="section-title">Accommodation Preferences</h2>
+                    <div class="field radio-group">
+                        <span class="label">Preferred accommodation type <span class="required-mark">*</span></span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="preferred_type" value="house" {% if profile.preferred_type|lower == 'house' %}checked{% endif %}> House</label>
+                            <label class="radio-label"><input type="radio" name="preferred_type" value="apartment" {% if profile.preferred_type|lower == 'apartment' %}checked{% endif %}> Apartment</label>
+                            <label class="radio-label"><input type="radio" name="preferred_type" value="anyways" {% if profile.preferred_type|lower == 'anyways' or not profile.preferred_type %}checked{% endif %}> Anyway</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="city">City <span class="required-mark">*</span></label>
+                        <input type="hidden" name="city_lat" id="cityLat" value="{{ profile.city_lat|default:'' }}">
+                        <input type="hidden" name="city_lon" id="cityLon" value="{{ profile.city_lon|default:'' }}">
+                        <input type="text" id="city" name="city" placeholder="Enter city" value="{{ profile.city|default:'' }}">
+                        <p class="field-hint">Enter your city and click Next to set location, or click on the map below to pin a spot.</p>
+                    </div>
+                    <div class="field">
+                        <label for="preferredLocation">Preferred location</label>
+                        <input type="text" id="preferredLocation" name="preferred_location" placeholder="Click to select location on map..." value="{{ profile.preferred_location|default:'' }}">
+                    </div>
+                    <div class="field">
+                        <label for="locationRadius">Radius (km)</label>
+                        <input type="number" id="locationRadius" name="location_radius" placeholder="e.g. 5" min="1" max="20" step="1" title="Search radius in kilometres (max 20 km)" value="{{ profile.location_radius|default:'' }}">
+                    </div>
+                    <div class="field map-container">
+                        <label>Select your preferred location on map</label>
+                        <div id="preferredLocationMap" class="map-box">Interactive map – click to select your preferred location.</div>
+                    </div>
+                    <div id="validationMessageAccommodation" class="validation-message validation-message-section" role="alert" {% if not error or error_section != 'validationMessageAccommodation' %}hidden{% endif %}>{% if error_section == 'validationMessageAccommodation' %}{{ error }}{% endif %}</div>
+                </section>
+
+                <div class="form-actions form-actions-next">
+                    <button type="button" class="btn-next" id="btnNext">Next</button>
+                </div>
+                </div>
+
+                <div class="form-part form-part-hidden" id="formPart2">
+                <section class="form-section">
+                    <h2 class="section-title">Roommate Preferences</h2>
+                    <p class="section-desc">Set your preferences for your ideal roommate.</p>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="minAge">Minimum roommate age</label>
+                            <input type="number" id="minAge" name="min_roommate_age" min="18" max="120" value="{{ profile.min_roommate_age|default:'18' }}">
+                        </div>
+                        <div class="field">
+                            <label for="maxAge">Maximum roommate age</label>
+                            <input type="number" id="maxAge" name="max_roommate_age" min="18" max="120" value="{{ profile.max_roommate_age|default:'65' }}">
+                        </div>
+                    </div>
+
+                    <div class="field radio-group" id="roommateHasAccommodationBlock">
+                        <span class="label">Should the roommate have accommodation?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_has_accommodation" value="yes" id="roommateAccommodationYes" {% if profile.roommate_has_accommodation|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="roommate_has_accommodation" value="no" id="roommateAccommodationNo" {% if profile.roommate_has_accommodation|lower == 'no' %}checked{% endif %}> No</label>
+                            <label class="radio-label"><input type="radio" name="roommate_has_accommodation" value="doesnt_matter" id="roommateAccommodationDoesntMatter" {% if profile.roommate_has_accommodation|lower != 'yes' and profile.roommate_has_accommodation|lower != 'no' %}checked{% endif %}> Doesn't matter</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="roommateAccommodationTypeBlock" hidden>
+                        <div class="field radio-group">
+                            <span class="label">If yes, what type do you prefer?</span>
+                            <div class="radio-options">
+                                <label class="radio-label"><input type="radio" name="roommate_accommodation_type" value="house" {% if profile.roommate_accommodation_type|lower == 'house' %}checked{% endif %}> House</label>
+                                <label class="radio-label"><input type="radio" name="roommate_accommodation_type" value="apartment" {% if profile.roommate_accommodation_type|lower == 'apartment' %}checked{% endif %}> Apartment</label>
+                                <label class="radio-label"><input type="radio" name="roommate_accommodation_type" value="doesnt_matter" {% if not profile.roommate_accommodation_type or profile.roommate_accommodation_type|lower == 'doesnt_matter' %}checked{% endif %}> Doesn't matter</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">What gender should the roommate be?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_gender" value="male" {% if profile.roommate_gender|lower == 'male' %}checked{% endif %}> Male</label>
+                            <label class="radio-label"><input type="radio" name="roommate_gender" value="female" {% if profile.roommate_gender|lower == 'female' %}checked{% endif %}> Female</label>
+                            <label class="radio-label"><input type="radio" name="roommate_gender" value="doesnt_matter" {% if profile.roommate_gender == "Doesn't matter" or profile.roommate_gender|lower == "doesn't matter" %}checked{% endif %}> Doesn't matter</label>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Is it acceptable that the roommate has a pet?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_pet_ok" value="yes" id="roommatePetOkYes" {% if profile.roommate_pet_ok|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="roommate_pet_ok" value="no" id="roommatePetOkNo" {% if profile.roommate_pet_ok|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="roommatePetsNotWantedBlock" hidden>
+                        <div class="field">
+                            <label for="petsNotWanted">Pets you do not want (separate with commas)</label>
+                            <input type="text" id="petsNotWanted" name="pets_not_wanted" placeholder="e.g. dog, cat, bird" value="{{ profile.pets_not_wanted|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Is it acceptable that the roommate smokes?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_smoker_ok" value="yes" {% if profile.roommate_smoker_ok|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="roommate_smoker_ok" value="no" {% if profile.roommate_smoker_ok|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Is it acceptable that the roommate has parties?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_parties_ok" value="yes" id="roommatePartiesOkYes" {% if profile.roommate_parties_ok|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="roommate_parties_ok" value="no" id="roommatePartiesOkNo" {% if profile.roommate_parties_ok|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="roommatePartyFrequencyBlock" hidden>
+                        <div class="field">
+                            <label for="roommatePartyFrequency">How often is acceptable?</label>
+                            <select id="roommatePartyFrequency" name="roommate_party_frequency">
+                                <option value="">Select...</option>
+                                <option value="rarely" {% if profile.roommate_party_frequency|lower == 'rarely' %}selected{% endif %}>Rarely</option>
+                                <option value="often" {% if profile.roommate_party_frequency|lower == 'often' %}selected{% endif %}>Often</option>
+                                <option value="very_often" {% if profile.roommate_party_frequency|lower == 'very_often' %}selected{% endif %}>Very often</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Do you want the roommate to have a partner?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_partner_ok" value="yes" {% if profile.roommate_partner_ok|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="roommate_partner_ok" value="no" {% if profile.roommate_partner_ok|lower == 'no' %}checked{% endif %}> No</label>
+                            <label class="radio-label"><input type="radio" name="roommate_partner_ok" value="doesnt_matter" {% if profile.roommate_partner_ok == "Doesn't matter" or profile.roommate_partner_ok|lower == "doesn't matter" or not profile.roommate_partner_ok %}checked{% endif %}> Doesn't matter</label>
+                        </div>
+                    </div>
+                    <div class="field radio-group">
+                        <span class="label">Is it acceptable that the roommate plays an instrument?</span>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="roommate_instrument_ok" value="yes" id="roommateInstrumentOkYes" {% if profile.roommate_instrument_ok|lower == 'yes' %}checked{% endif %}> Yes</label>
+                            <label class="radio-label"><input type="radio" name="roommate_instrument_ok" value="no" id="roommateInstrumentOkNo" {% if profile.roommate_instrument_ok|lower != 'yes' %}checked{% endif %}> No</label>
+                        </div>
+                    </div>
+                    <div class="conditional-block" id="roommateInstrumentsBotherBlock" hidden>
+                        <div class="field">
+                            <label for="instrumentsBother">Which instruments bother you? (separate with commas)</label>
+                            <input type="text" id="instrumentsBother" name="instruments_bother" placeholder="e.g. drums, guitar" value="{{ profile.instruments_bother|default:'' }}">
+                        </div>
+                    </div>
+                    <div id="validationMessageRoommate" class="validation-message validation-message-section" role="alert" {% if not error or error_section != 'validationMessageRoommate' %}hidden{% endif %}>{% if error_section == 'validationMessageRoommate' %}{{ error }}{% endif %}</div>
+                </section>
+                    <div class="form-actions form-actions-submit">
+                        <button type="button" class="btn-back" id="btnBack">Back</button>
+                        <button type="submit" class="btn-submit">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: potvrda brisanja profila -->
+    <div class="modal-overlay modal-overlay-delete" id="deleteProfileModal" role="dialog" aria-modal="true" aria-labelledby="deleteProfileModalTitle" hidden>
+        <div class="modal-dialog modal-dialog-delete">
+            <h2 class="modal-title" id="deleteProfileModalTitle">Delete profile</h2>
+            <p class="modal-message">Are you sure you want to delete your profile? This action cannot be undone and all your data will be permanently removed.</p>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn modal-btn-cancel" id="deleteProfileModalCancel">Cancel</button>
+                <button type="button" class="modal-btn modal-btn-delete" id="deleteProfileModalConfirm">Yes, delete my profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="{% static 'js/create_profile.js' %}"></script>
+    <script src="{% static 'js/my_profile.js' %}"></script>
+    <script>
+    (function () {
+        var mapEl = document.getElementById('preferredLocationDisplayMap');
+        if (!mapEl || typeof L === 'undefined') return;
+        var raw = (mapEl.getAttribute('data-preferred-location') || '').trim();
+        if (!raw) return;
+        var parts = raw.split(/[\s,]+/);
+        if (parts.length < 2) return;
+        var lat = parseFloat(parts[0]);
+        var lon = parseFloat(parts[1]);
+        if (isNaN(lat) || isNaN(lon)) return;
+        var map = L.map('preferredLocationDisplayMap', { dragging: true, zoomControl: true }).setView([lat, lon], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        L.marker([lat, lon]).addTo(map);
+        mapEl.classList.add('leaflet-container');
+    })();
+    </script>
+    {% if show_edit_form and error_section %}
+    <script>
+        (function () {
+            var sectionId = '{{ error_section|escapejs }}';
+            var el = document.getElementById(sectionId);
+            var formPart1 = document.getElementById('formPart1');
+            var formPart2 = document.getElementById('formPart2');
+            if (sectionId === 'validationMessageRoommate' && formPart2 && formPart1) {
+                formPart2.classList.remove('form-part-hidden');
+                formPart1.classList.add('form-part-hidden');
+            }
+            if (el) {
+                el.hidden = false;
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        })();
+    </script>
+    {% endif %}
+</body>
+</html>

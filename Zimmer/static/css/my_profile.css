@@ -1,0 +1,417 @@
+/* My Profile page – extends create_profile layout */
+
+.profile-view-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    position: relative;
+}
+
+.profile-view-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.profile-view-spacer {
+    flex: 1;
+}
+
+.btn-edit-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e85d04;
+    background: #fff;
+    border: 1px solid #e85d04;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-edit-profile:hover {
+    background: #e85d04;
+    color: #fff;
+}
+
+.btn-edit-profile .icon-pencil {
+    flex-shrink: 0;
+}
+
+/* Centered profile photo – backend fills the image */
+.profile-photo-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 2rem auto;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f0f0f0;
+    border: 2px solid #e0e0e0;
+}
+
+.profile-photo-display-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-photo-placeholder-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+}
+
+.profile-photo-placeholder-text {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* Display-only fields: label + bold value (no inputs) */
+.profile-fields {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.5rem 0;
+}
+
+.field-display {
+    margin-bottom: 0.75rem;
+}
+
+.field-display .label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.25rem;
+}
+
+/* Read-only preferred location map (view mode) */
+.map-box-display {
+    height: 200px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+.map-box-display.leaflet-container {
+    z-index: 0;
+}
+
+.field-display .profile-value {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.field-display .profile-value strong {
+    font-weight: 700;
+    color: #222;
+}
+
+/* Two columns on wider screens for basic info style */
+@media (min-width: 520px) {
+    .profile-fields.form-grid-display {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem 1.25rem;
+    }
+}
+
+/* Edit mode: readonly (disabled) fields – grouped, aligned */
+.readonly-fields-group {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: #f8f7f5;
+    border-radius: 10px;
+    border: 1px solid #e8e6e3;
+}
+
+.form-grid.form-grid-readonly {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+}
+
+.form-grid-readonly .field-readonly-full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 520px) {
+    .form-grid.form-grid-readonly {
+        grid-template-columns: 1fr;
+    }
+    .form-grid-readonly .field-readonly-full {
+        grid-column: 1;
+    }
+}
+
+.field-readonly {
+    margin-bottom: 0;
+}
+
+.field-readonly label {
+    font-size: 0.88rem;
+    color: #666;
+}
+
+.field-readonly input:disabled,
+.field-readonly input[readonly] {
+    background: #fff !important;
+    color: #333 !important;
+    cursor: not-allowed !important;
+    border-color: #d4d2ce !important;
+    font-size: 0.95rem;
+    padding: 0.55rem 0.75rem;
+}
+
+.input-jmbg {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+}
+
+.field-readonly .input-with-icon input {
+    padding-right: 2.5rem;
+}
+
+.field-readonly .input-icon {
+    opacity: 0.5;
+}
+
+/* View header: Back (left) and Edit (right) */
+.profile-view-header--with-back {
+    justify-content: space-between;
+}
+
+/* Back link: match Edit profile button (orange); override browser link defaults */
+a.btn-back-view,
+a.btn-back-view:link,
+a.btn-back-view:visited {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.6rem 1.25rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e85d04 !important;
+    background: #fff;
+    border: 1px solid #e85d04;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+a.btn-back-view:hover {
+    background: #e85d04;
+    color: #fff !important;
+}
+
+.btn-cancel-edit {
+    padding: 0.6rem 1.25rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-cancel-edit:hover {
+    background: #f0f0f0;
+    border-color: #888;
+}
+
+.profile-edit-wrap[hidden],
+#profileEditBlock[hidden] {
+    display: none !important;
+}
+
+/* Single white card: form inside edit card has no extra box */
+.profile-form-in-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Edit form: occupation + budget stacked with minimal gap; photo uses same circle as create */
+.occupation-budget-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.occupation-budget-group .field {
+    margin-bottom: 0;
+}
+
+.form-grid.form-grid-basic-edit {
+    align-items: start;
+}
+
+/* Delete profile – bottom of view card */
+.profile-actions-bottom {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8e8e8;
+}
+
+.form-delete-profile {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-delete-profile {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    background: #c62828;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-delete-profile:hover {
+    background: #b71c1c;
+}
+
+/* Modal za potvrdu brisanja profila */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: modalOverlayIn 0.2s ease-out;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+@keyframes modalOverlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-dialog {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    max-width: 420px;
+    width: 100%;
+    padding: 1.75rem;
+    animation: modalDialogIn 0.25s ease-out;
+}
+
+@keyframes modalDialogIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-dialog-delete .modal-title {
+    font-family: inherit;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.75rem 0;
+}
+
+.modal-dialog-delete .modal-message {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #555;
+    margin: 0 0 1.5rem 0;
+}
+
+.modal-dialog-delete .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.modal-btn {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    border: 1px solid transparent;
+}
+
+.modal-btn-cancel {
+    background: #fff;
+    color: #e85d04;
+    border-color: #e85d04;
+}
+
+.modal-btn-cancel:hover {
+    background: #e85d04;
+    color: #fff;
+}
+
+.modal-btn-delete {
+    background: #c62828;
+    color: #fff;
+    border-color: #c62828;
+}
+
+.modal-btn-delete:hover {
+    background: #b71c1c;
+    border-color: #b71c1c;
+}
+
+
+#roommateHasAccommodationBlock {
+    margin: 0 0 1rem 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+/* AJAX form message – success vs error */
+#profileEditFormMessage.validation-message--success {
+    color: #2e7d32;
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+}
+
+#profileEditFormMessage.validation-message--error {
+    color: #c62828;
+    background: #ffebee;
+    border-color: #ef9a9a;
+}

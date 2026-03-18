@@ -1,0 +1,244 @@
+/* 50% photo, 50% info – card fills available space */
+.roommate-card {
+  width: 100%;
+  max-width: 760px;
+  height: 520px;
+  min-height: 480px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.card-left {
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-carousel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.card-carousel-track {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.card-carousel-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.card-carousel-slide[hidden] {
+  display: none;
+}
+
+.card-image-wrap {
+  width: 100%;
+  height: 100%;
+  background: #f3ece6;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.card-map-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #e8e4df;
+}
+
+.card-map-box {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: none;
+}
+
+.card-map-box.leaflet-container {
+  z-index: 0;
+  font-family: inherit;
+}
+
+/* Carousel arrows (when profile offers housing) */
+.card-carousel-arrows {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  z-index: 2;
+}
+
+.card-carousel-arrows[hidden] {
+  display: none;
+}
+
+.carousel-arrow {
+  pointer-events: auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.carousel-arrow:hover {
+  background: #fff;
+  transform: scale(1.08);
+}
+
+.carousel-arrow--prev { left: 0.5rem; }
+.carousel-arrow--next { right: 0.5rem; }
+
+/* Right column: even spacing, bigger type, balanced layout */
+.card-right {
+  height: 100%;
+  min-height: 0;
+  padding: 1rem 1.15rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  justify-content: flex-start;
+}
+
+.card-identity {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.card-name {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.card-subtitle {
+  margin: 0.4rem 0 0 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #555;
+  line-height: 1.35;
+}
+
+/* Housing block – even spacing with rest */
+.card-housing {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
+}
+
+.card-housing-status {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #e85d04;
+  line-height: 1.35;
+}
+
+.card-housing-money {
+  margin: 0.4rem 0 0 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #2a2a2a;
+  line-height: 1.35;
+}
+
+.card-location-line {
+  margin: 0.4rem 0 0 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #444;
+  line-height: 1.35;
+}
+
+/* Sections – even spacing, bigger text */
+.card-section {
+  margin: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-section-title {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-list {
+  margin: 0.25rem 0 0 0;
+  padding-left: 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.5;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.card-list li {
+  margin-bottom: 0.25rem;
+}
+
+.card-list li:last-child {
+  margin-bottom: 0;
+}
+
+.card-pets-content .card-list,
+.card-instruments-content .card-list {
+  margin-top: 0.2rem;
+}
+
+.card-empty-label {
+  margin: 0.25rem 0 0 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: #888;
+  font-style: italic;
+  line-height: 1.4;
+}

@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zimmer - Verify User</title>
+
+  <link rel="stylesheet" href="{% static 'css/moderator_verify.css' %}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="profile-page">
+
+  <header class="profile-header">
+    <form method="post" action="{% url 'logout' %}" class="logout-form-corner">
+      {% csrf_token %}
+      <button type="submit" class="btn-logout">Log out</button>
+    </form>
+
+    <img src="{% static 'img/img.png' %}" alt="Zimmer" class="profile-logo">
+    <h1 class="profile-title">Verify User</h1>
+    <p class="profile-subtitle">Moderator verification panel</p>
+  </header>
+
+  {% if entry %}
+
+  <div class="profile-view-card">
+
+    <!-- Profile Photo -->
+    <section class="form-section">
+      <h2 class="section-title">Profile Photo</h2>
+
+      <div class="profile-photo-display profile-photo-display-round">
+        {% if profile.profilephotourl %}
+        <img class="profile-photo-display-img"
+             src="{{ media_url }}{{ profile.profilephotourl }}"
+             alt="Profile photo">
+        {% else %}
+        <div class="profile-photo-placeholder-box">
+          <span class="profile-photo-placeholder-text">No photo</span>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Basic Information -->
+    <section class="form-section">
+      <h2 class="section-title">Basic Information</h2>
+
+      <div class="profile-fields">
+        <div class="field-display">
+          <span class="label">First Name</span>
+          <p class="profile-value"><strong>{{ profile.name }}</strong></p>
+        </div>
+
+        <div class="field-display">
+          <span class="label">Last Name</span>
+          <p class="profile-value"><strong>{{ profile.surname }}</strong></p>
+        </div>
+
+        <div class="field-display">
+          <span class="label">Date Of Birth</span>
+          <p class="profile-value"><strong>{{ profile.dateofbirth }}</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Document Photo -->
+    <section class="form-section">
+      <h2 class="section-title">Submitted Document</h2>
+
+      <div class="profile-photo-display profile-photo-display-document">
+        <img class="profile-photo-display-img profile-photo-display-img-document"
+             src="{{ media_url }}{{ entry.personaldocumentphoto }}"
+             alt="Document photo">
+      </div>
+    </section>
+
+    <!-- Approve / Reject -->
+    <div class="profile-actions-bottom">
+      <form method="post" class="moderator-actions-form">
+        {% csrf_token %}
+        <input type="hidden" name="account_id" value="{{ entry.idacc.idacc }}">
+
+        <button type="submit"
+                name="action"
+                value="approve"
+                class="btn-submit btn-action">
+          Approve
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="reject"
+                class="btn-reject btn-action">
+          Reject
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  {% else %}
+
+  <div class="profile-view-card">
+    <p class="profile-subtitle">No users waiting for verification.</p>
+  </div>
+
+  {% endif %}
+
+</div>
+
+</body>
+</html>

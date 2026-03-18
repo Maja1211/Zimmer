@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches – Zimmer</title>
+    <link rel="stylesheet" href="{% static 'css/matches.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-shell">
+        <div class="bg-blur"></div>
+        <div class="bg-overlay"></div>
+
+        <header class="topbar">
+            <a href="{% url 'home' %}" class="brand">
+                <img src="{% static 'img/img.png' %}" alt="Zimmer logo" class="brand__logo">
+            </a>
+
+            <nav class="topbar__nav">
+                <a href="{% url 'my_profile' %}" class="nav-btn nav-btn--light">My Profile</a>
+                <a href="{% url 'swipe' %}" class="nav-btn nav-btn--light">Swipe</a>
+                <a href="{% url 'logout' %}" class="nav-btn nav-btn--accent">Logout</a>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <section class="matches-section">
+                <div class="matches-heading">
+                    <h1>Your Matches</h1>
+                    <p>Here are the people you matched with. Reach out using their contact info.</p>
+                </div>
+
+                <article class="matches-board">
+                    <div class="matches-grid">
+                        {% for user in matched_users %}
+                            <article class="match-card">
+                                <div class="match-image-wrap">
+                                    <img src="{{ user.image }}" alt="{{ user.full_name }}" class="match-image">
+                                </div>
+
+                                <div class="match-info">
+                                    <div class="match-main">
+                                        <h2 class="match-name">
+                                            {{ user.full_name }}{% if user.age %}, {{ user.age }}{% endif %}
+                                        </h2>
+
+                                        <div class="contact-list">
+                                            <div class="contact-item">
+                                                <span class="contact-icon">✉</span>
+                                                <span class="contact-text">{{ user.email }}</span>
+                                            </div>
+
+                                            <div class="contact-item">
+                                                <span class="contact-icon">☎</span>
+                                                <span class="contact-text">{{ user.phone }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="remove-match-btn"
+                                        onclick="openRemoveModal('{{ user.id }}', '{{ user.full_name|escapejs }}')">
+                                        Remove
+                                    </button>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <div class="empty-state">
+                                <h2>No matches yet</h2>
+                                <p>You still don’t have any matches. Go back to Swipe and keep looking.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <div id="removeMatchModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="modal-title">Remove match</h3>
+            <p class="modal-text" id="removeMatchText">
+                Are you sure you want to remove this match?
+            </p>
+
+            <form id="removeMatchForm" method="post">
+                {% csrf_token %}
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn modal-btn--secondary" onclick="closeRemoveModal()">
+                        No
+                    </button>
+                    <button type="submit" class="modal-btn modal-btn--danger">
+                        Yes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openRemoveModal(userId, fullName) {
+            const modal = document.getElementById('removeMatchModal');
+            const form = document.getElementById('removeMatchForm');
+            const text = document.getElementById('removeMatchText');
+
+            form.action = `/remove-match/${userId}/`;
+            text.textContent = `Are you sure you want to remove ${fullName} from your matches?`;
+
+            modal.classList.add('show');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeRemoveModal() {
+            const modal = document.getElementById('removeMatchModal');
+            modal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+        }
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('removeMatchModal');
+            if (e.target === modal) {
+                closeRemoveModal();
+            }
+        });
+
+        window.addEventListener('keydown', function (e) {
+            const modal = document.getElementById('removeMatchModal');
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeRemoveModal();
+            }
+        });
+    </script>
+</body>
+</html>

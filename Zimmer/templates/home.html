@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zimmer – Find Your Perfect Stay</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="hero">
+        <div class="hero__bg"></div>
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <div class="logo">
+                <img src="{% static 'img/logo.png' %}" alt="Zimmer" class="logo__img" width="480">
+            </div>
+            <p class="tagline">Find Your Perfect Stay</p>
+            <div class="actions">
+                {% if is_moderator %}
+                <form method="post" action="{% url 'logout' %}" class="hero-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="hero-btn-logout">Log out</button>
+                </form>
+                <a href="{% url 'moderator_page' %}" class="hero-link-moderator">Moderator panel</a>
+                {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>
